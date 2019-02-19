@@ -1,3 +1,3 @@
 #!/bin/bash
-echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-docker push USER/REPO
+echo "$DOCKER_PASSWORD" | sudo docker login -u "$DOCKER_USERNAME" --password-stdin
+sudo docker push $DOCKER_USERNAME/sprova
