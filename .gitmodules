@@ -1,0 +1,6 @@
+[submodule "server"]
+	path = server
+	url = https://github.com/aldialimucaj/sprova-server.git
+[submodule "web"]
+	path = web
+	url = https://github.com/aldialimucaj/sprova-web.git

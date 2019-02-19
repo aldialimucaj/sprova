@@ -1,0 +1,47 @@
+version: "3.6"
+services:
+  sprova:
+    image: "mjeshtri/sprova"
+    working_dir: /server
+    environment:
+      - NODE_ENV=production
+      - SPROVA_DB_USERNAME=${DB_USER}
+      - SPROVA_DB_PASSWORD=${DB_PASSWORD}
+      - VIRTUAL_PORT=${HOST_PORT}
+      - VIRTUAL_HOST=${HOST_NAME}
+    volumes:
+      - ./data/server:/server/data
+      - ./config:/server/config
+    expose:
+      - "8181"
+    ports:
+      - 8181:8181
+    depends_on:
+      - mongodb
+    restart: always
+    networks:
+      - frontend
+      - backend
+    command: "npm start"
+  mongodb:
+    image: mongo:latest
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/data/logs
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+      - MONGO_INITDB_DATABASE=sprova
+    volumes:
+      - ./data/db:/data/db
+      - ./data/logs:/data/logs
+      - ./mongo_init:/docker-entrypoint-initdb.d
+    ports:
+        - 27017:27017
+    restart: always
+    networks:
+      - backend
+    command: mongod --smallfiles
+networks:
+  frontend:
+  backend:
+    internal: true

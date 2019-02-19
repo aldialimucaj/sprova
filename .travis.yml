@@ -1,0 +1,17 @@
+sudo: required
+services:
+  - docker
+
+language: node_js
+node_js:
+  - "11"
+
+branches:
+  only:
+    - master
+
+script:
+  - bash sprova-build.sh
+
+after_success:
+  - bash sprova-push-docker.sh
