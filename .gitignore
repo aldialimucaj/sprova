@@ -1,3 +1,4 @@
+.env
+mongo_init/collections.js
 /data
 **/*.del
-**/*.template
