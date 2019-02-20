@@ -30,8 +30,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
       - MONGO_INITDB_DATABASE=sprova
     volumes:
-      - ./data/db:/data/db
-      - ./data/logs:/data/logs
+      - ${DB_DIR}:/data/db
+      - ${DB_LOG_DIR}:/data/logs
       - ./mongo_init:/docker-entrypoint-initdb.d
     ports:
         - 27017:27017

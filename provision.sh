@@ -3,6 +3,7 @@ MONGO_BOOTSTRAP_FILE="mongo_init/collections.js"
 
 PASSWORD_LENGTH=20
 PASSWORD_TEMPLATE="#password#"
+JWT_TEMPLATE="#jwt_secret#"
 
 
 # reset config files
@@ -24,6 +25,12 @@ function provision {
         exit 1
     fi
 
+    if ! grep -Fq "$JWT_TEMPLATE" $ENV_FILE
+    then
+        echo "Error $JWT_TEMPLATE was not found in $ENV_FILE"
+        exit 1
+    fi
+
     if ! grep -Fq "$PASSWORD_TEMPLATE" $MONGO_BOOTSTRAP_FILE
     then
         echo "Error $PASSWORD_TEMPLATE was not found in $MONGO_BOOTSTRAP_FILE"
@@ -35,9 +42,11 @@ function provision {
 
     # generated password
     GENERATED_PWD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9!$/()=?+%<>*:;' | fold -w $PASSWORD_LENGTH | head -n 1)
-
+    # generated jwt secret
+    JWT_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9!$/()=?+%<>*:;' | fold -w $PASSWORD_LENGTH | head -n 1)
     echo ""
-    echo -e "Database password:  \e[31m$GENERATED_PWD\e[0m"
+    echo -e "Database password: \t\e[31m$GENERATED_PWD\e[0m"
+    echo -e "JWT Secret: \t\e[31m$GENERATED_PWD\e[0m"
     echo ""
 
     sed -i "s/$PASSWORD_TEMPLATE/$GENERATED_PWD/g" $ENV_FILE
