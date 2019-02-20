@@ -9,6 +9,7 @@ services:
       - SPROVA_DB_PASSWORD=${DB_PASSWORD}
       - VIRTUAL_PORT=${HOST_PORT}
       - VIRTUAL_HOST=${HOST_NAME}
+      - JWT_SECRET=${JWT_SECRET}
     volumes:
       - ./data/server:/server/data
       - ./config:/server/config

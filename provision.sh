@@ -3,6 +3,7 @@ MONGO_BOOTSTRAP_FILE="mongo_init/collections.js"
 
 PASSWORD_LENGTH=20
 PASSWORD_TEMPLATE="#password#"
+ADMIN_PASSWORD_TEMPLATE="#admin_pwd#"
 JWT_TEMPLATE="#jwt_secret#"
 
 
@@ -41,16 +42,20 @@ function provision {
     cp -n $MONGO_BOOTSTRAP_FILE "$MONGO_BOOTSTRAP_FILE.template"
 
     # generated password
-    GENERATED_PWD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9!$/()=?+%<>*:;' | fold -w $PASSWORD_LENGTH | head -n 1)
+    GENERATED_PWD=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9!$/=?+%<>:;' | fold -w $PASSWORD_LENGTH | head -n 1)
     # generated jwt secret
-    JWT_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9!$/()=?+%<>*:;' | fold -w $PASSWORD_LENGTH | head -n 1)
+    GENERATED_JWT_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9!$/=?+%<>:;' | fold -w $PASSWORD_LENGTH | head -n 1)
+    # generate admin pwd based on jwt secret
+    ADMIN_INITIAL_PWD=$(node -e "console.log(require('./server/src/helpers/utils.js').sha512('admin','$GENERATED_JWT_SECRET'))")
     echo ""
     echo -e "Database password: \t\e[31m$GENERATED_PWD\e[0m"
-    echo -e "JWT Secret: \t\e[31m$GENERATED_PWD\e[0m"
+    echo -e "JWT Secret: \t\t\e[31m$GENERATED_JWT_SECRET\e[0m"
     echo ""
 
     sed -i "s/$PASSWORD_TEMPLATE/$GENERATED_PWD/g" $ENV_FILE
+    sed -i "s/$JWT_TEMPLATE/$GENERATED_JWT_SECRET/g" $ENV_FILE
     sed -i "s/$PASSWORD_TEMPLATE/$GENERATED_PWD/g" $MONGO_BOOTSTRAP_FILE
+    sed -i "s/$ADMIN_PASSWORD_TEMPLATE/$ADMIN_INITIAL_PWD/g" $MONGO_BOOTSTRAP_FILE
 
     echo "Provisioning successful"
 }
