@@ -39,6 +39,14 @@ services:
     networks:
       - backend
     command: mongod --smallfiles
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - frontend
 networks:
   frontend:
   backend:
